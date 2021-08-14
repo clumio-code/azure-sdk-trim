@@ -1,0 +1,16 @@
+#
+# Python development requirements, allows us to locally install with just
+#   `pip install -r dev-requirements.txt`
+#
+
+-e .
+
+black>=21.6b0
+gray>=0.10.1
+green>=3.3.0
+mypy>=0.910
+mypy-extensions>=0.4.3
+pyfakefs>=4.5.0
+pylint>=2.9.6
+pyupgrade>=2.23.3
+unify>=0.5

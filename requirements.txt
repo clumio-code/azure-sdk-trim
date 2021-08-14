@@ -1,0 +1,6 @@
+#
+# Python requirements, allows us to locally install with just
+#   `pip install -r requirements.txt`
+#
+
+-e .
