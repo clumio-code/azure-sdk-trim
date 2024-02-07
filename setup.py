@@ -16,21 +16,15 @@
 
 """Setup script for azure-sdk-trim."""
 
-import sys
-
 from setuptools import find_packages
 from setuptools import setup
 
-if sys.version_info[0] < 3:
-    with open('README.md') as fh:
-        long_description = fh.read()
-else:
-    with open('README.md', encoding='utf-8') as fh:
-        long_description = fh.read()
+with open('README.md', encoding='utf-8') as fh:
+    long_description = fh.read()
 
 setup(
     name='azure-sdk-trim',
-    version='0.1.0',
+    version='0.2.0',
     description='Python SDK for Clumio REST API',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -41,6 +35,9 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     packages=find_packages(),
     entry_points={'console_scripts': ['azure-sdk-trim=azure_sdk_trim.azure_sdk_trim:main']},

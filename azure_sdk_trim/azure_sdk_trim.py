@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2021 Clumio, Inc.
+# Copyright 2021. Clumio, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,32 +20,48 @@
 
 """Simple script to purge mostly useless Azure SDK API versions.
 
-The Azure SDK for python is over 600MB and growing. The main reason for the
-size and growth is that each release gets added internally and all prior
-release are kept. This is a troublesome design which does not seem to be
-addressed in the near future. This deleted most but not all API versions as
-multiple versions are required for importing the models. This keep a high
-compatibility level while trimming more than half of the space used.
+The Azure SDK for python is 1.2GB and growing. The main reason for the size and
+growth is that each release gets added internally and all prior releases are
+kept. This is a troublesome design that does not seem to be seriously addressed,
+even after being reported and acknowledged for several years.
+
+This tool deletes most but not all API versions as multiple versions depend on
+each other, and the az cli itself does not always use the latest versions.
+
+This keeps a high-compatibility level while trimming almost half of the space.
+
+Note that the az cli team has since created their own trim_sdk.py script, linked
+below.
 
 So Long & Thanks For All The Fish.
 
 https://github.com/Azure/azure-sdk-for-python/issues/11149
 https://github.com/Azure/azure-sdk-for-python/issues/17801
+https://github.com/Azure/azure-cli/issues/26966
+https://github.com/Azure/azure-cli/blob/dev/scripts/trim_sdk.py
 """
 
 from __future__ import annotations
 
 import argparse
 import importlib.util
+import json
 import logging
 import pathlib
 import re
 import shutil
 import subprocess
 import sys
-from typing import Optional, Sequence
+from typing import Sequence
 
-from humanize import filesize  # type: ignore
+from humanize import filesize
+
+try:
+    # Import the az cli profiles module, if present, to detect which SDK versions are used.
+    from azure.cli.core import profiles  # type: ignore
+except ImportError:
+    profiles = None
+
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +83,31 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     )
 
     return parser.parse_args(argv[1:])
+
+
+def get_az_cli_versions() -> dict[str, str]:
+    """Returns list of SDK versions used by the az cli.
+
+    The az cli has its own opinionated set of old SDKs to deal with. This is
+    very unfortunate. We also have to resort to do a runtime import which is a
+    bad practice, but we need to access the az CLI internals.
+    """
+    if profiles is None:
+        logger.info('No az cli detected.')
+        return {}
+    latest = profiles.API_PROFILES['latest']
+    versions = {}
+    for sdk, version in latest.items():
+        if version is None:
+            continue
+        # Use .removeprefix() instead of .replace() when we drop python 3.8 support.
+        sdk_dir = sdk.import_prefix.replace('azure.', '', 1).replace('.', '/')
+        version_string = version if isinstance(version, str) else version.default_api_version
+        version_dir = 'v' + version_string.replace('.', '_').replace('-', '_')
+        versions[sdk_dir] = version_dir
+    logger.info('Detected az cli with %d SDKs to keep.', len(versions))
+    logger.debug(json.dumps(versions, indent=4, sort_keys=True))
+    return versions
 
 
 def disk_usage(path: pathlib.Path) -> int:
@@ -91,22 +132,29 @@ class VersionedApiDir:
 
     Such directories will contain one or more version folder such as v7.0,
     v2020_12_01 or v2021_02_01_preview and a file named models.py which will
-    imports the models from specific versions. The most recent, default, version
-    is assumed to be in that list of imports.
+    import the models from specific versions. The most recent, default, versions
+    are assumed to be in that list of imports.
 
-    We scrape the imports lines in the models file to detect that this is a
-    multi versioned API with potential folders to be trimmed. The import list is
-    use to whitelist the folders we need to keep.
+    We scrape the import lines in the models.py file to detect that this is a
+    multi-versioned API with potential folders to be trimmed. The import list is
+    them used as a keep list.
     """
 
-    def __init__(self, path: pathlib.Path):
+    def __init__(self, path: pathlib.Path, base_dir: pathlib.Path) -> None:
         self._path = path.parent if path.name == 'models.py' else path
-        self._versions: Optional[tuple[str, ...]] = None
+        self._base_dir = base_dir
+        self._versions: set[str] | None = None
+        self._keep: set[str] = set()
 
     @property
     def path(self) -> pathlib.Path:
         """Returns the path of the API directory."""
         return self._path
+
+    @property
+    def sub_dir(self) -> str:
+        """Returns the subdirectory of the API directory."""
+        return str(self.path.relative_to(self._base_dir))
 
     def _parse_models(self) -> tuple[str, ...]:
         """Parse models.py to find which versions are in imported and in use."""
@@ -120,11 +168,18 @@ class VersionedApiDir:
                 versions.append(match.group(1))
         return tuple(versions)
 
+    def keep(self, versions: str | Sequence[str] = ()):
+        """Keep the given versions."""
+        self._keep.update((versions,) if isinstance(versions, str) else versions)
+        self._versions = None
+
     @property
-    def versions(self) -> tuple[str, ...]:
+    def versions(self) -> set[str]:
         """Returns the versions declared in models.py."""
         if self._versions is None:
-            self._versions = self._parse_models()
+            versions = set(self._parse_models())
+            versions.update(self._keep)
+            self._versions = versions
         return self._versions
 
     @property
@@ -153,7 +208,7 @@ def find_api_dirs(base_dir: pathlib.Path) -> set[VersionedApiDir]:
     """Find the API directories with multiple versions."""
     api_dirs = set()
     for sub_path in base_dir.rglob('models.py'):
-        api_dir = VersionedApiDir(sub_path)
+        api_dir = VersionedApiDir(sub_path, base_dir)
         if api_dir.is_versioned:
             api_dirs.add(api_dir)
     return api_dirs
@@ -175,8 +230,11 @@ def purge_old_releases(base_dir: pathlib.Path):
     usage = disk_usage(base_dir)
     logger.info('%s is using %s.', base_dir, filesize.naturalsize(usage))
 
+    cli_versions = get_az_cli_versions()
     api_dirs = find_api_dirs(base_dir)
     for api_dir in api_dirs:
+        if api_dir.sub_dir in cli_versions:
+            api_dir.keep(cli_versions[api_dir.sub_dir])
         purge_api_dir(api_dir)
 
     new_usage = disk_usage(base_dir)
@@ -184,10 +242,8 @@ def purge_old_releases(base_dir: pathlib.Path):
     logger.info('Saved %s.', filesize.naturalsize(usage - new_usage))
 
 
-def main(argv: Optional[Sequence[str]] = None):
+def main(argv: Sequence[str]):
     """Main."""
-    if argv is None:
-        argv = sys.argv
     args = parse_args(argv)
     if args.verbose:
         logging.basicConfig(

@@ -2,15 +2,15 @@
 
 Simple Python script to purge mostly useless Azure SDK API versions.
 
-The Azure SDK for python is over 600MB and growing. The main reason for the
+The Azure SDK for python is 1.2GB and growing. The main reason for the
 size and growth is that each release gets added internally and all prior
 release are kept. This is a troublesome design which does not seem to be
 addressed in the near future. This deleted most but not all API versions as
 multiple versions are required for importing the models. This keep a high
-compatibility level while trimming more than half of the space used.
+compatibility level while trimming half of the space used.
 
-This has been tested with Python 3.9, but the unittests pass with 3.8.
-For the Azure versions it has been tested with azure-cli 2.25.0 to 2.27.1.
+The latest version has been tested with Python 3.12.1, but the unittests pass with 3.8.
+For the Azure versions the latest version has been tested with azure-cli 2.53.0 to 2.57.0.
 
 So Long & Thanks For All The Fish.
 
@@ -25,10 +25,10 @@ wget https://raw.githubusercontent.com/clumio-code/azure-sdk-trim/main/azure_sdk
 ```
 
 ```shell
-pip install git+https://github.com/clumio-code/azure-sdk-trim@v0.1.0#egg=azure-sdk-trim
+pip install git+https://github.com/clumio-code/azure-sdk-trim@v0.2.0#egg=azure-sdk-trim
 ```
 
-The script has been developed and tested with Python 3.9.6, but compatibility
+The script has been developed and tested with Python 3.12.1, but compatibility
 with older releases of Python 3 should be possible.
 
 
@@ -42,9 +42,9 @@ version is a good enough workaround but this could lead to unsuspected behavior,
 so we do not intend to add symlinks automatically. We recommend filing bugs
 against the upstream maintainers so that they stop pointing to obsolete APIs.
 
-We use newer Python syntax so 3.8 is required, but the code can be modified for
-backward compatibility with 3.7 if needed. We will not accept any PR to add
-support for unsupported versions of Python (no python 2.7 or 3.5).
+We use newer Python syntax so py3.12 is recommended, but the code can be modified for
+backward compatibility with 3.8 if needed. We will not accept any PR to add
+support for unsupported versions of Python (anything older than 3.8).
 
 
 ## Style Guide
