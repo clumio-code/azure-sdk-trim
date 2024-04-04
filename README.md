@@ -8,8 +8,6 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
 
-[![Build Status](
-
 Simple Python script to purge mostly useless Azure SDK API versions.
 
 The Azure SDK for python is 1.2GB and growing. The main reason for the
