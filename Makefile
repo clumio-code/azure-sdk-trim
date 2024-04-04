@@ -33,7 +33,7 @@ install:
 
 # Install the script and the development dependencies.
 dev-install:
-	pip install -r dev-requirements.txt
+	pip install -r requirements-dev.txt
 
 
 uninstall:

@@ -24,7 +24,7 @@ with open('README.md', encoding='utf-8') as fh:
 
 setup(
     name='azure-sdk-trim',
-    version='0.2.0',
+    version='0.2.1',
     description='Python SDK for Clumio REST API',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -40,7 +40,7 @@ setup(
         'Programming Language :: Python :: 3.12',
     ],
     packages=find_packages(),
-    entry_points={'console_scripts': ['azure-sdk-trim=azure_sdk_trim.azure_sdk_trim:main']},
+    entry_points={'console_scripts': ['azure-sdk-trim=azure_sdk_trim.azure_sdk_trim:entry_point']},
     install_requires=[
         'humanize>=3.11.0',
     ],

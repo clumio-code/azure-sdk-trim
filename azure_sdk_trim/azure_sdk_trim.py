@@ -261,5 +261,10 @@ def main(argv: Sequence[str]):
     purge_old_releases(base_dir)
 
 
-if __name__ == '__main__':
+def entry_point():
+    """Entry point."""
     sys.exit(main(sys.argv))
+
+
+if __name__ == '__main__':
+    entry_point()

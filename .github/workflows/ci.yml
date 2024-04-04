@@ -26,13 +26,18 @@ on:
     branches: [ main ]
   workflow_dispatch:
   # Allow manual trigger for debugging the workflow.
+env:
+  # Python version to run all the checks.
+  PY_FULL_CHECKS: '3.12'
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
-    name: Python ${{ matrix.python-version }}
+      fail-fast: false
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -44,10 +49,10 @@ jobs:
       - name: Install
         run: make dev-install
       - name: pylint
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == env.PY_FULL_CHECKS && matrix.os == 'ubuntu-latest'
         run: make pylint
       - name: mypy
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == env.PY_FULL_CHECKS && matrix.os == 'ubuntu-latest'
         run: make mypy
       - name: Unit Tests
         run: make test
