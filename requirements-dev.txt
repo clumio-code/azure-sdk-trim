@@ -4,6 +4,7 @@
 #
 
 black>=24.3.0
+build>=1.2.1
 gray>=0.14.0
 green>=4.0.1
 mypy>=1.9.0
