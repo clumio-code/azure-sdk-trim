@@ -1,9 +1,7 @@
 #
 # Python development requirements, allows us to locally install with just
-#   `pip install -r requirements-dev.txt`
+#   `pip install -e .[dev]`
 #
-
--e .
 
 black>=24.3.0
 gray>=0.14.0

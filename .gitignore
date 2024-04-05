@@ -37,7 +37,8 @@ build
 .coverage-*
 .mypy_cache
 __pycache__
-dist/*.whl
+dist
+*.whl
 *.pyc
 *.egg-info
 *.wheel

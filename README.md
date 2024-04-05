@@ -1,5 +1,6 @@
 # azure-sdk-trim
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=bugs)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
@@ -18,7 +19,7 @@ versions as multiple API versions can import prior versions, and the azure cli
 can point directly at older, preview, versions. This approach keeps a high
 compatibility level while trimming half of the space used.
 
-The 0.2.1 release has been tested with Python 3.12.2, azure-cli 2.58.0 where the
+The 0.2.2 release has been tested with Python 3.12.2, azure-cli 2.59.0 where the
 azure sdk is 1.2GB and the trimmed version is about 600MB.
 We unittest against python versions 3.8 to 3.12 on macOS, Linux and Windows.
 
@@ -70,6 +71,11 @@ we rely on [Gray](https://github.com/dizballanze/gray)
 configured to use [Black](https://github.com/psf/black).
 
 Please run `gray .` and `make test mypy pylint`, before submitting any PR.
+
+
+## Disclaimer
+
+This project is not affiliated with Microsoft or the Azure SDK maintainers.
 
 
 ## Links

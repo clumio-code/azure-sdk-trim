@@ -1,0 +1,51 @@
+#
+# pyproject.toml file for clumio-code/azure-sdk-trim
+#
+
+[build-system]
+requires = ['setuptools>=69.2.0']
+build-backend = 'setuptools.build_meta'
+
+
+[project]
+name = 'azure-sdk-trim'
+# Keep the version in sync in the sonar-project.properties file.
+version = '0.2.2'
+description = 'Azure SDK Trim tool'
+readme = 'README.md'
+authors = [ {name = 'Clumio Inc.'} ]
+license = {file = 'LICENSE'}
+requires-python = '>=3.8'
+keywords = ['azure', 'sdk', 'clumio']
+dynamic = ['dependencies', 'optional-dependencies']
+
+
+[project.urls]
+Homepage = 'https://github.com/clumio-code/azure-sdk-trim'
+Documentation = 'https://github.com/clumio-code/azure-sdk-trim?tab=readme-ov-file'
+Repository = 'https://github.com/clumio-code/azure-sdk-trim'
+Issues = 'https://github.com/clumio-code/azure-sdk-trim/issues'
+Changelog = 'https://github.com/clumio-code/azure-sdk-trim/releases'
+
+
+[project.scripts]
+azure-sdk-trim = 'azure_sdk_trim.azure_sdk_trim:entry_point'
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ['requirements.txt']}
+optional-dependencies.dev = { file = ['requirements-dev.txt'] }
+
+
+[tool.coverage.run]
+source = ['azure_sdk_trim']
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'if __name__ == .__main__.:',
+    'if TYPE_CHECKING:',
+]
+
+[tool.pylint]
+max-line-length = 100
