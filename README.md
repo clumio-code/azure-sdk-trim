@@ -1,4 +1,7 @@
 # azure-sdk-trim
+![PyPI - Version](https://img.shields.io/pypi/v/azure-sdk-trim)
+![GitHub License](https://img.shields.io/github/license/Clumio-code/azure-sdk-trim)
+
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=clumio-code_azure-sdk-trim&metric=bugs)](https://sonarcloud.io/summary/new_code?id=clumio-code_azure-sdk-trim)
@@ -28,17 +31,21 @@ So Long & Thanks For All The Fish.
 
 ## Installation
 
-This script is not published on pypi.org but you can either download the script
-as a standalone script or pip install it from github directly:
+This script is published on pypi.org so you can simply install it or add it to
+your requirements.
 
 ```shell
-wget https://raw.githubusercontent.com/clumio-code/azure-sdk-trim/main/azure_sdk_trim/azure_sdk_trim.py
+pip install azure-sdk-trim
 ```
 
+## Usage
+
+Simply call the script, it will detect the installed azure sdk and trim it.
 ```shell
-pip install git+https://github.com/clumio-code/azure-sdk-trim@v0.2.0#egg=azure-sdk-trim
+azure-sdk-trim
 ```
 
+You can pass `--help` fore more options.
 
 ## Caveats
 
