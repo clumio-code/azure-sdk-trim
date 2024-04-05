@@ -23,17 +23,19 @@ test_reports := build/test_reports/py
 
 
 clean:
-	rm -rf build .mypy_cache .coverage
+	rm -rf build .mypy_cache .coverage *.egg-info dist
 
+build:
+	python3 -m build
 
 # Install the script locally.
 install:
-	pip install -r requirements.txt
+	pip install .
 
 
 # Install the script and the development dependencies.
 dev-install:
-	pip install -r requirements-dev.txt
+	pip install '.[dev]'
 
 
 uninstall:
@@ -41,11 +43,11 @@ uninstall:
 
 # Run the unittests.
 test:
-	rm -rf $(test_reports) .coverage
-	mkdir -p $(test_reports)
-	python3 -m green --run-coverage --junit-report=$(test_reports)/azure_sdk_trim-pytests.xml azure_sdk_trim
-	python3 -m coverage xml -o $(test_reports)/azure_sdk_trim-pycoverage.xml
-	python3 -m coverage html -d $(test_reports)/azure_sdk_trim-pycoverage-html
+	rm -rf $(test_reports) .coverage; \
+    mkdir -p $(test_reports); \
+    python3 -m green --run-coverage --junit-report=$(test_reports)/azure_sdk_trim-pytests.xml azure_sdk_trim; \
+    python3 -m coverage xml -o $(test_reports)/azure_sdk_trim-pycoverage.xml; \
+    python3 -m coverage html -d $(test_reports)/azure_sdk_trim-pycoverage-html
 	@echo "HTML code coverage report was generated in $(test_reports)/azure_sdk_trim-pycoverage-html"
 	@echo "Open it with:"
 	@echo "  open $(test_reports)/azure_sdk_trim-pycoverage-html/index.html"
@@ -53,7 +55,7 @@ test:
 
 # Run pylint to help check that our code is sane.
 pylint:
-	python3 -m pylint setup.py azure_sdk_trim
+	python3 -m pylint azure_sdk_trim
 
 
 # Run mypy to check that our type annotation is correct.

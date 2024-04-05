@@ -1,7 +1,3 @@
-#
-# Python requirements, allows us to locally install with just
-#   `pip install -r requirements.txt`
-#
+# Installation requirements.
 
--e .
 humanize>=4.9.0
